@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implant Pending @ 7.15 AM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --panel-lighter: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --glass: rgba(30, 41, 59, 0.7);
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .date-badge {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-align: right;
+            box-shadow: var(--card-shadow);
+        }
+
+        .date-badge span {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        .date-badge strong {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        /* Main Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 16px;
+        }
+
+        /* Sidebar Panels */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .panel-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-zone input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            background: #d97706;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            background: var(--panel);
+            padding: 6px;
+            border-radius: 14px;
+            width: fit-content;
+        }
+
+        .tab {
+            padding: 8px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-msg {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* Table Design */
+        .table-container {
+            background: var(--panel);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .table-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: #1e293b;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            padding: 16px 20px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Report Specific Styling */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            color: #1a1a2e;
+            font-size: 14px;
+            border: 2px solid #2d2b7c;
+        }
+
+        .report-table th,
+        .report-table td {
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            padding: 6px 8px;
+            white-space: nowrap;
+        }
+
+        .report-table .row-label {
+            text-align: left;
+            font-weight: 600;
+            background: #ffffff;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            color: #1a1a2e;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .report-table th {
+            background: #2d2b7c;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .report-table th.row-label {
+            background: #2d2b7c;
+            color: #ffffff;
+        }
+
+        .report-table tbody tr {
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .report-table tbody tr:hover {
+            background: #f5f5ff;
+        }
+
+        .report-table .cell-dash {
+            color: #b0b0b0;
+        }
+
+        .report-table .cell-value {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .report-table .col-total {
+            color: #4a00e0;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .report-table .grand-total {
+            background: #f0f0ff !important;
+            border-top: 2px solid #2d2b7c;
+        }
+
+        .report-table .grand-total td {
+            font-weight: 800;
+            color: #2d2b7c;
+            font-size: 14px;
+        }
+
+        .report-table .grand-total .row-label {
+            color: #2d2b7c;
+            background: #f0f0ff;
+            font-size: 14px;
+        }
+
+        .report-table .grand-total .col-total {
+            color: #4a00e0;
+            font-size: 18px;
+        }
+
+        .report-title-row {
+            background: #ffffff !important;
+            border: none !important;
+        }
+
+        .report-title-row td {
+            border: none !important;
+            padding: 10px 8px 8px;
+            background: #ffffff;
+        }
+
+        .report-main-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a1a2e;
+            text-align: center;
+            letter-spacing: -0.01em;
+        }
+
+        .report-main-title .arrow {
+            color: #2d2b7c;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 80px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.2;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--panel-lighter);
+        }
+
+        .btn-copy-report {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-copy-report:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-copy-report:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .panel {
+                flex: 1;
+                min-width: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Implant Pending @ 7.15</h1>
+                <p style="color: var(--text-muted); margin-top: 4px;">Precision report generation and filtering engine
+                </p>
+            </div>
+            <div class="date-badge">
+                <span>Current Cycle</span>
+                <strong id="todayLabel">--</strong>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="panel fade-in" style="animation-delay: 0.1s;">
+                    <div class="panel-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                        </svg>
+                        Data Ingestion
+                    </div>
+                    <div class="upload-zone">
+                        <span class="upload-icon">📁</span>
+                        <p style="font-weight: 600;">Drop Excel file here</p>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Support .xlsx, .xls, .csv
+                        </p>
+                        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
+                    </div>
+                    <div class="btn-group">
+                        <button id="copyImage" class="btn-accent" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                            Copy as Image
+                        </button>
+                        <button id="downloadExcel" class="btn-primary" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
+                            Download Excel
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="fade-in" style="animation-delay: 0.4s;">
+                    <div class="status-msg" id="status">Waiting for data input...</div>
+                    <div class="tabs">
+                        <div id="reportTab" class="tab active">Pivot View</div>
+                        <div id="filteredTab" class="tab">Filtered Rows</div>
+                        <div id="rejectedTab" class="tab">Rejection Detail</div>
+                    </div>
+                </div>
+
+                <div class="table-container fade-in" style="animation-delay: 0.5s;">
+                    <div class="table-header">
+                        <div id="tableTitle" style="font-weight: 700; font-family: 'Outfit';">Analytics View</div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div id="tableCount" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">--
+                                items</div>
+                            <button id="copyReport" class="btn-copy-report" disabled>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                </svg>
+                                Copy Report
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <div id="tableToCapture">
+                            <table id="resultTable"></table>
+                        </div>
+                        <div id="emptyState" class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <line x1="3" y1="9" x2="21" y2="9" />
+                                <line x1="9" y1="21" x2="9" y2="9" />
+                            </svg>
+                            <p>No data loaded yet. Please upload the SAP Hourly Report.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Action completed!</div>
+
+    <script>
+        const requiredColumns = [
+            'JobCardNum', 'CustomerName', 'ProductName', 'FamilyName',
+            'RequiredDate', 'LastScanningLocation', 'New Department', 'TeethCount'
+        ];
+
+        const blockedCustomers = new Set(['SMILE DENTAL CARE', 'EMPIRE DENTAL CARE']);
+        const allowedFamilies = new Set(['METAL', 'METAL FREE']);
+        const blockedLocations = new Set(['FINALATTACHEMENTPACK', 'QA', 'WAITING FOR CONNECTED JOBCARD', 'BLANK', '-BLANK']);
+
+        const fileInput = document.getElementById('fileInput');
+        const statusEl = document.getElementById('status');
+        const resultTable = document.getElementById('resultTable');
+        const emptyState = document.getElementById('emptyState');
+        const tableTitle = document.getElementById('tableTitle');
+        const tableCount = document.getElementById('tableCount');
+        const reportTab = document.getElementById('reportTab');
+        const filteredTab = document.getElementById('filteredTab');
+        const rejectedTab = document.getElementById('rejectedTab');
+        const copyImageBtn = document.getElementById('copyImage');
+        const downloadExcelBtn = document.getElementById('downloadExcel');
+        const copyReportBtn = document.getElementById('copyReport');
+        const toast = document.getElementById('toast');
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let sourceHeaders = [];
+        let filteredRowsData = [];
+        let rejectedRowsData = [];
+        let reportRowsData = [];
+        let reportDateColumns = [];
+        let reportGrandTotal = 0;
+        let currentView = 'report';
+
+        document.getElementById('todayLabel').textContent = formatDisplayDate(today);
+
+        fileInput.addEventListener('change', handleFile);
+        reportTab.addEventListener('click', () => switchView('report'));
+        filteredTab.addEventListener('click', () => switchView('filtered'));
+        rejectedTab.addEventListener('click', () => switchView('rejected'));
+        copyImageBtn.addEventListener('click', copyTableAsImage);
+        downloadExcelBtn.addEventListener('click', generateFinalExcel);
+        copyReportBtn.addEventListener('click', copyTableAsImage);
+
+        function normalize(value) {
+            return String(value ?? '').trim().replace(/\s+/g, ' ').toUpperCase();
+        }
+
+        function normalizeHeader(value) {
+            return normalize(value).replace(/[^A-Z0-9]/g, '');
+        }
+
+        function formatDisplayDate(date) {
+            if (!date) return '(blank)';
+            return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        }
+
+        function excelSerialToDate(serial) {
+            // Excel epoch is Jan 1, 1900. Serial 1 = Jan 1, 1900.
+            // But Excel incorrectly treats 1900 as a leap year, so serials > 59 are off by 1.
+            // 25569 is the number of days between Excel epoch (Jan 0, 1900) and Unix epoch (Jan 1, 1970).
+            const daysSinceUnix = Math.floor(serial) - 25569;
+            // Build the date using UTC to avoid any timezone shift, then extract as local
+            const d = new Date(Date.UTC(1970, 0, 1 + daysSinceUnix));
+            return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+        }
+
+        function parseRequiredDate(value) {
+            // If cellDates produced a Date object, extract UTC components to avoid timezone shift
+            if (value instanceof Date && !Number.isNaN(value.getTime())) {
+                // Use UTC components because XLSX cellDates stores dates in UTC
+                return new Date(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate());
+            }
+            // Raw Excel serial number (when cellDates is false)
+            if (typeof value === 'number' && Number.isFinite(value) && value > 1) {
+                return excelSerialToDate(value);
+            }
+            const text = String(value ?? '').trim();
+            if (!text) return null;
+            // DD-MM-YYYY or DD/MM/YYYY
+            const dmy = text.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
+            if (dmy) {
+                const year = Number(dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3]);
+                const month = Number(dmy[2]) - 1;
+                const day = Number(dmy[1]);
+                return new Date(year, month, day);
+            }
+            // YYYY-MM-DD (ISO-like strings)
+            const ymd = text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (ymd) {
+                return new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]));
+            }
+            const parsed = new Date(text);
+            if (Number.isNaN(parsed.getTime())) return null;
+            return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function findColumnMap(headers) {
+            const normalizedHeaders = headers.map(normalizeHeader);
+            const map = {};
+            requiredColumns.forEach((column) => {
+                const target = normalizeHeader(column);
+                map[column] = normalizedHeaders.findIndex((header) => header === target);
+            });
+            return map;
+        }
+
+        function rowToObject(row, headers) {
+            const record = {};
+            headers.forEach((header, index) => {
+                record[header || `Col ${index + 1}`] = row[index] ?? '';
+            });
+            return record;
+        }
+
+        function validateRow(row, columnMap) {
+            const reasons = [];
+            const jobCardNum = normalize(row[columnMap.JobCardNum]);
+            const customerName = normalize(row[columnMap.CustomerName]);
+            const productName = normalize(row[columnMap.ProductName]);
+            const familyName = normalize(row[columnMap.FamilyName]);
+            const requiredDate = parseRequiredDate(row[columnMap.RequiredDate]);
+            const location = normalize(row[columnMap.LastScanningLocation]);
+
+            if (!jobCardNum) reasons.push('Blank JobCard');
+            if (jobCardNum.startsWith('M')) reasons.push("Starts with 'M'");
+            if (blockedCustomers.has(customerName)) reasons.push('Excluded Customer');
+            if (productName.includes('TRIAL')) reasons.push('Trial Product');
+            if (!allowedFamilies.has(familyName)) reasons.push('Unsupported Family');
+            if (!requiredDate) reasons.push('Missing/Invalid Date');
+            if (requiredDate && requiredDate > today) reasons.push('Future Date');
+            if (!location) reasons.push('Blank Location');
+            if (blockedLocations.has(location)) reasons.push('Blocked Location');
+
+            return { passed: reasons.length === 0, reasons, parsedRequiredDate: requiredDate };
+        }
+
+        async function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            resetState();
+            statusEl.textContent = `Analyzing ${file.name}...`;
+
+            try {
+                const buffer = await file.arrayBuffer();
+                // Read with cellDates:false to get raw serial numbers — avoids timezone-induced date shifts
+                const workbook = XLSX.read(buffer, { type: 'array', cellDates: false });
+                const mainSheetName = workbook.SheetNames.find((name) => normalizeHeader(name) === normalizeHeader('Sheet1')) || workbook.SheetNames[0];
+                const sheet = workbook.Sheets[mainSheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+
+                if (rows.length < 2) throw new Error('File has no data rows.');
+
+                sourceHeaders = rows[0].map((h, i) => String(h || `Col ${i + 1}`).trim());
+                const columnMap = findColumnMap(sourceHeaders);
+                const missing = requiredColumns.filter(c => columnMap[c] === -1);
+                if (missing.length) throw new Error(`Missing columns: ${missing.join(', ')}`);
+
+                rows.slice(1).forEach((row) => {
+                    const record = rowToObject(row, sourceHeaders);
+                    const validation = validateRow(row, columnMap);
+                    if (validation.passed) {
+                        filteredRowsData.push({
+                            ...record,
+                            __RequiredDate: formatDisplayDate(validation.parsedRequiredDate),
+                            __RowLabel: normalize(row[columnMap['LastScanningLocation']]),
+                            __ReportValue: Number(row[columnMap.TeethCount]) || 1
+                        });
+                    } else {
+                        rejectedRowsData.push({ Reason: validation.reasons.join(', '), ...record });
+                    }
+                });
+
+                buildReport();
+                copyImageBtn.disabled = filteredRowsData.length === 0;
+                downloadExcelBtn.disabled = filteredRowsData.length === 0;
+                copyReportBtn.disabled = filteredRowsData.length === 0;
+                statusEl.textContent = `Completed: ${filteredRowsData.length} records verified.`;
+                switchView('report');
+            } catch (err) {
+                statusEl.textContent = err.message;
+                statusEl.style.color = 'var(--danger)';
+            }
+        }
+
+        function resetState() {
+            filteredRowsData = []; rejectedRowsData = []; reportRowsData = []; reportDateColumns = []; reportGrandTotal = 0;
+            statusEl.style.color = 'var(--text-muted)';
+        }
+
+        function buildReport() {
+            const matrix = {}; const dateSet = new Set();
+            reportGrandTotal = 0;
+
+            filteredRowsData.forEach((row) => {
+                const label = row.__RowLabel || '(blank)';
+                const date = row.__RequiredDate;
+                const value = row.__ReportValue;
+                if (!matrix[label]) matrix[label] = {};
+                matrix[label][date] = (matrix[label][date] || 0) + value;
+                dateSet.add(date);
+                reportGrandTotal += value;
+            });
+
+            reportDateColumns = Array.from(dateSet).sort((a, b) => {
+                if (a === '(blank)') return 1; if (b === '(blank)') return -1;
+                return parseRequiredDate(a) - parseRequiredDate(b);
+            });
+
+            reportRowsData = Object.keys(matrix).sort().map((label) => {
+                const item = { label, total: 0 };
+                reportDateColumns.forEach(date => {
+                    item[date] = matrix[label][date] || 0;
+                    item.total += item[date];
+                });
+                return item;
+            });
+        }
+
+        function switchView(view) {
+            currentView = view;
+            reportTab.classList.toggle('active', view === 'report');
+            filteredTab.classList.toggle('active', view === 'filtered');
+            rejectedTab.classList.toggle('active', view === 'rejected');
+
+            if (view === 'report') {
+                tableTitle.textContent = 'Pivot Summary';
+                tableCount.textContent = `${reportRowsData.length} locations`;
+                renderReportTable();
+            } else {
+                const data = view === 'filtered' ? filteredRowsData : rejectedRowsData;
+                tableTitle.textContent = view === 'filtered' ? 'Verified Data' : 'Rejection Detail';
+                tableCount.textContent = `${data.length} records`;
+                renderDetailTable(data);
+            }
+        }
+
+        function renderReportTable() {
+            resultTable.innerHTML = '';
+            emptyState.style.display = reportRowsData.length ? 'none' : 'block';
+            if (!reportRowsData.length) return;
+
+            resultTable.className = 'report-table';
+
+            // Title row
+            let html = `<thead><tr class="report-title-row"><td colspan="${reportDateColumns.length + 2}" class="report-main-title"><span class="arrow">——✦</span> IMPLANT PENDING REPORT @7.15AM <span class="arrow">✦——</span></td></tr>`;
+
+            // Column headers
+            html += `<tr><th class="row-label">DEPARTMENT</th>${reportDateColumns.map(d => `<th>${d}</th>`).join('')}<th>GRAND<br>TOTAL</th></tr></thead><tbody>`;
+
+            // Data rows
+            reportRowsData.forEach(row => {
+                html += `<tr><td class="row-label">${row.label}</td>`;
+                reportDateColumns.forEach(d => {
+                    const val = row[d] || 0;
+                    html += val ? `<td class="cell-value">${val}</td>` : `<td class="cell-dash">-</td>`;
+                });
+                html += `<td class="col-total">${row.total}</td></tr>`;
+            });
+
+            // Grand total row
+            const colTotals = reportDateColumns.map(d => reportRowsData.reduce((s, r) => s + (r[d] || 0), 0));
+            html += `<tr class="grand-total"><td class="row-label">GRAND TOTAL</td>`;
+            html += colTotals.map(t => t ? `<td>${t}</td>` : `<td class="cell-dash">-</td>`).join('');
+            html += `<td class="col-total">${reportGrandTotal}</td></tr></tbody>`;
+            resultTable.innerHTML = html;
+        }
+
+        function renderDetailTable(data) {
+            resultTable.innerHTML = '';
+            resultTable.className = '';
+            emptyState.style.display = data.length ? 'none' : 'block';
+            if (!data.length) return;
+
+            const displayData = data.slice(0, 200);
+            const headers = Object.keys(displayData[0]).filter(k => !k.startsWith('__'));
+            let html = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+            displayData.forEach(row => {
+                html += `<tr>${headers.map(h => `<td>${escapeHtml(row[h])}</td>`).join('')}</tr>`;
+            });
+            html += '</tbody>';
+            resultTable.innerHTML = html;
+        }
+
+        async function copyTableAsImage() {
+            const element = document.getElementById('tableToCapture');
+            if (!element) return;
+
+            statusEl.textContent = 'Capturing image...';
+
+            try {
+                const canvas = await html2canvas(element, {
+                    backgroundColor: '#ffffff',
+                    scale: 2, // High resolution
+                    logging: false,
+                    useCORS: true
+                });
+
+                canvas.toBlob(async (blob) => {
+                    try {
+                        const item = new ClipboardItem({ "image/png": blob });
+                        await navigator.clipboard.write([item]);
+                        showToast('Table copied as Image!');
+                    } catch (err) {
+                        // Fallback for some browsers
+                        const url = URL.createObjectURL(blob);
+                        window.open(url, '_blank');
+                        showToast('Image opened in new tab (Clipboard blocked)');
+                    }
+                    statusEl.textContent = 'Image capture complete.';
+                });
+            } catch (err) {
+                console.error('Image capture failed', err);
+                statusEl.textContent = 'Image capture failed.';
+            }
+        }
+
+        async function generateFinalExcel() {
+            const wb = new ExcelJS.Workbook();
+
+            // Sheet 1: Full Filtered Data
+            const ws1 = wb.addWorksheet('Sheet1');
+            const rawData = filteredRowsData.map(({ __RequiredDate, __RowLabel, __ReportValue, ...r }) => r);
+            if (rawData.length > 0) {
+                const headers = Object.keys(rawData[0]);
+                ws1.addRow(headers).font = { bold: true };
+                rawData.forEach(row => ws1.addRow(Object.values(row)));
+            }
+
+            // Sheet 2: PENDING (Subset of columns)
+            const ws2 = wb.addWorksheet('PENDING');
+            const pendingCols = ['JobCardNum', 'PriorityCode', 'StateCode', 'CustomerName', 'ProductName', 'FamilyName', 'TeethCount', 'RegDate', 'RequiredDate', 'LastScanningLocation', 'New Department'];
+            ws2.addRow(pendingCols).font = { bold: true };
+            rawData.forEach(row => {
+                ws2.addRow(pendingCols.map(col => row[col] ?? ''));
+            });
+
+            // Sheet 3: Pivot Report
+            const ws3 = wb.addWorksheet('Sheet3');
+            ws3.getCell('A1').value = 'IMPLANT PENDING REPORT @ 7.30';
+            ws3.mergeCells(1, 1, 1, reportDateColumns.length + 2);
+            ws3.getCell('A1').font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+            ws3.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6366F1' } };
+            ws3.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const headerRow = ws3.getRow(2);
+            headerRow.getCell(1).value = 'Row Labels';
+            reportDateColumns.forEach((d, i) => headerRow.getCell(i + 2).value = d);
+            headerRow.getCell(reportDateColumns.length + 2).value = 'Grand Total';
+            headerRow.font = { bold: true };
+
+            reportRowsData.forEach((row, idx) => {
+                const r = ws3.getRow(idx + 3);
+                r.getCell(1).value = row.label;
+                reportDateColumns.forEach((d, i) => r.getCell(i + 2).value = row[d] || null);
+                r.getCell(reportDateColumns.length + 2).value = row.total;
+            });
+
+            const lastR = ws3.getRow(reportRowsData.length + 3);
+            lastR.getCell(1).value = 'Grand Total';
+            reportDateColumns.forEach((d, i) => {
+                lastR.getCell(i + 2).value = reportRowsData.reduce((s, r) => s + (r[d] || 0), 0);
+            });
+            lastR.getCell(reportDateColumns.length + 2).value = reportGrandTotal;
+            lastR.font = { bold: true };
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'IMPLANT PENDING.xlsx';
+            a.click();
+            showToast('Final Report Downloaded!');
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+
+</html>
